@@ -36,6 +36,16 @@ Use modifying and creation of categories and channels to maximize:
 #     """Prints a message to the console for logging or user feedback."""
 #     print(message)
 
+# def delete_channel(id: str) -> json:
+#     """Deletes a channel by its ID. Requires MANAGE_CHANNELS permission. Returns the deleted channel object or an error."""
+#     url = f"https://discord.com/api/v10/channels/{id}"
+#     headers = {"Authorization": f"Bot {BOT_TOKEN}"}
+#     response = requests.delete(url, headers=headers)
+#     if response.status_code == 200:
+#         return response.json()
+#     else:
+#         return {"error": f"Failed to delete channel: {response.status_code}"}
+
 @tool
 def get_guild_channels() -> json:
     """Retrieves a list of all channels in the guild, including their details like ID, name, type, and position."""
