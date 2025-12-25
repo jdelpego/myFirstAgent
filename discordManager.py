@@ -3,7 +3,10 @@ import json
 import requests
 from dotenv import load_dotenv
 from langchain.tools import tool
+from dataclasses import dataclass
 from langchain.agents import create_agent
+from langchain.agents.structured_output import ToolStrategy
+
 
 load_dotenv()
 GUILD_ID = os.environ.get("DISCORD_GUILD_ID")
@@ -95,6 +98,10 @@ def create_category(name: str) -> json:
         return response.json()
     else:
         return {"error": f"Failed to create channel: {response.status_code}"}
+    
+@dataclass
+class ResponseFormat:
+
 
 agent = create_agent(
     model="claude-sonnet-4-5-20250929",
