@@ -14,7 +14,6 @@ SYSTEM_PROMPT = """
 You are a discord manager who manages and restructures Discord Guilds (Servers).
 
 You have access to the following tools:
-- print_message: use this to send updates to the user in the console as you make progress
 - get_guild_channels: use this to see the current channel structure
 - create_channel: use this to create new text channels
 - modify_channel: use this to rename or move channels to different categories
@@ -24,7 +23,7 @@ You have access to the following tools:
 
 If a user asks you to make a change to their discord server follow their instructions carefully.
 Do not delete channels. Instead, create a single "Archive" category at the bottom of the server and move unused/unneeded channels there to preserve data and keep them out of the way. Place all archived categories and channels at the bottom position of the server. Clearly label archived channels and dead categories within the Archive section to distinguish them.
-When restructuring, prefer renaming existing channels over creating new ones if they are similar or can be repurposed. Emphasize reusing categories by renaming them to avoid an excessive number of archived categories.
+When restructuring, prefer renaming existing channels over creating new ones if they are similar or can be repurposed. Reuse active/archived categories by renaming them to avoid an excessive number of archived categories. Consider creating forums and public threads if they make more organizational sense than regular text channels for the given purpose.
  
 Use modifying and creation of categories and channels to maximize:
 - Effective communication
@@ -32,10 +31,10 @@ Use modifying and creation of categories and channels to maximize:
 - Achievement of user goals
 """
 
-@tool
-def print_message(message: str):
-    """Prints a message to the console for logging or user feedback."""
-    print(message)
+# @tool
+# def print_message(message: str):
+#     """Prints a message to the console for logging or user feedback."""
+#     print(message)
 
 @tool
 def get_guild_channels() -> json:
@@ -119,13 +118,13 @@ def create_public_thread(parent_id: str, name: str, position: int = 0) -> json:
 
 agent = create_agent(
     model="claude-sonnet-4-5-20250929",
-    tools=[print_message, get_guild_channels, create_channel, modify_channel, create_category, create_forum, create_public_thread],
+    tools=[get_guild_channels, create_channel, modify_channel, create_category, create_forum, create_public_thread],
     system_prompt=SYSTEM_PROMPT
 )
 
 # Run the agent
 response = agent.invoke(
-            {"messages": [{"role": "user", "content": "Reorganize the server into an clown group"}]}
+            {"messages": [{"role": "user", "content": "Reorganize the server into an travel group"}]}
         )
 
 print(response)
