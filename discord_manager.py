@@ -21,6 +21,8 @@ You have access to the following tools:
 - create_channel: use this to create new text channels
 - modify_channel: use this to rename or move channels to different categories
 - create_category: use this to create new categories
+- create_forum: use this to create new forum channels
+- create_public_thread: use this to create new public threads in channels
 
 If a user asks you to make a change to their discord server follow their instructions carefully.
 Do not delete channels. Instead, create a single "Archive" category at the bottom of the server and move unused/unneeded channels there to preserve data and keep them out of the way.
@@ -81,16 +83,40 @@ def modify_channel(channel_id: str, name: str = None, parent_id: str = None, pos
         return {"error": f"Failed to modify channel: {response.status_code}"}
 
 @tool
-def create_category(name: str) -> json:
-    """Creates a category channel with the given name. Categories group text/voice channels. Returns the created category or an error."""
+def create_category(name: str, position: int = 0) -> json:
+    """Creates a category channel with the given name. Optionally set position. Categories group text/voice channels. Returns the created category or an error."""
     url = f"https://discord.com/api/v10/guilds/{GUILD_ID}/channels"
     headers = {"Authorization": f"Bot {BOT_TOKEN}"}
-    data = {"name": name, "type": 4}
+    data = {"name": name, "type": 4, "position": position}
     response = requests.post(url, headers=headers, json=data)
     if response.status_code == 201:
         return response.json()
     else:
         return {"error": f"Failed to create channel: {response.status_code}"}
+    
+@tool
+def create_forum(name: str, position: int = 0) -> json:
+    """Creates a forum channel with the given name. Optionally set position. Forums hold public threads. Returns the created forum or an error."""
+    url = f"https://discord.com/api/v10/guilds/{GUILD_ID}/channels"
+    headers = {"Authorization": f"Bot {BOT_TOKEN}"}
+    data = {"name": name, "type": 15, "position": position}
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 201:
+        return response.json()
+    else:
+        return {"error": f"Failed to create channel: {response.status_code}"}
+    
+@tool
+def create_public_thread(parent_id: str, name: str, position: int = 0) -> json:
+    """Creates a public thread in the specified parent channel with the given name. Optionally set position. Returns the created thread or an error."""
+    url = f"https://discord.com/api/v10/channels/{parent_id}/threads"
+    headers = {"Authorization": f"Bot {BOT_TOKEN}"}
+    data = {"name": name, "type": 11, "position": position}
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 201:
+        return response.json()
+    else:
+        return {"error": f"Failed to create thread: {response.status_code}"}
     
 @dataclass
 class ResponseFormat:
@@ -100,12 +126,12 @@ class ResponseFormat:
 
 agent = create_agent(
     model="claude-sonnet-4-5-20250929",
-    tools=[print_message, get_guild_channels, create_channel, modify_channel, create_category],
+    tools=[print_message, get_guild_channels, create_channel, modify_channel, create_category, create_forum, create_public_thread],
     system_prompt=SYSTEM_PROMPT,
     response_format= ToolStrategy(ResponseFormat)
 )
 
 # Run the agent
 agent.invoke(
-    {"messages": [{"role": "user", "content": "Restructure the server to be about a clown as a service startup. "}]}
+    {"messages": [{"role": "user", "content": "Restructure the server to be about a entrepreneurial group"}]}
 )
