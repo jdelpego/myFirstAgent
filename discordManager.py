@@ -1,0 +1,85 @@
+import os
+import json
+import requests
+from dotenv import load_dotenv
+from langchain.agents import create_agent
+
+load_dotenv()
+GUILD_ID = os.environ.get("DISCORD_GUILD_ID")
+BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
+
+def print_message(message: str):
+    """Prints a message to the console for logging or user feedback."""
+    print(message)
+    
+def get_guild_channels() -> json:
+    """Retrieves a list of all channels in the guild, including their details like ID, name, type, and position."""
+    url = f"https://discord.com/api/v10/guilds/{GUILD_ID}/channels"
+    headers = {"Authorization": f"Bot {BOT_TOKEN}"}
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return {"error": f"Failed to fetch channels: {response.status_code}"}
+    
+def delete_channel(id: str) -> json:
+    """Deletes a channel by its ID. Requires MANAGE_CHANNELS permission. Returns the deleted channel object or an error."""
+    url = f"https://discord.com/api/v10/channels/{id}"
+    headers = {"Authorization": f"Bot {BOT_TOKEN}"}
+    response = requests.delete(url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return {"error": f"Failed to delete channel: {response.status_code}"}
+    
+def create_channel(name: str, parent_id: str = "", position: int = 0) -> json:
+    """Creates a text channel with the given name. Optionally set parent_id (category) and position. Returns the created channel or an error."""
+    url = f"https://discord.com/api/v10/guilds/{GUILD_ID}/channels"
+    headers = {"Authorization": f"Bot {BOT_TOKEN}"}
+    data = {"name": name, "type": 0, "position": position}
+    if parent_id:
+        data["parent_id"] = parent_id
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 201:
+        return response.json()
+    else:
+        return {"error": f"Failed to create channel: {response.status_code}"}
+    
+def modify_channel(channel_id: str, name: str = None, parent_id: str = None, position: int = None) -> json:
+    """Modifies a channel's properties by ID. Optionally update name, parent_id (category), or position. Returns the updated channel or an error."""
+    url = f"https://discord.com/api/v10/channels/{channel_id}"
+    headers = {"Authorization": f"Bot {BOT_TOKEN}"}
+    data = {}
+    if name is not None:
+        data["name"] = name
+    if parent_id is not None:
+        data["parent_id"] = parent_id
+    if position is not None:
+        data["position"] = position
+    response = requests.patch(url, headers=headers, json=data)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return {"error": f"Failed to modify channel: {response.status_code}"}
+
+def create_category(name: str) -> json:
+    """Creates a category channel with the given name. Categories group text/voice channels. Returns the created category or an error."""
+    url = f"https://discord.com/api/v10/guilds/{GUILD_ID}/channels"
+    headers = {"Authorization": f"Bot {BOT_TOKEN}"}
+    data = {"name": name, "type": 4}
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 201:
+        return response.json()
+    else:
+        return {"error": f"Failed to create channel: {response.status_code}"}
+
+agent = create_agent(
+    model="claude-sonnet-4-5-20250929",
+    tools=[print_message, get_guild_channels, delete_channel, create_channel, modify_channel, create_category],
+    system_prompt="You are a helpful assistant",
+)
+
+# Run the agent
+agent.invoke(
+    {"messages": [{"role": "user", "content": "Dekete all channels. Then create an entrepreneurial hackathon server setup. Then after you finish that convert it to be an entrepreneurial group setup by renaming the channels with no deletions. Do all this while outputting updates to the console."}]}
+)
