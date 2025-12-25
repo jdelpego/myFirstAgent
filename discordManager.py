@@ -2,16 +2,23 @@ import os
 import json
 import requests
 from dotenv import load_dotenv
+from langchain.tools import tool
 from langchain.agents import create_agent
 
 load_dotenv()
 GUILD_ID = os.environ.get("DISCORD_GUILD_ID")
 BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
 
+SYSTEM_PROMPT = """
+You are a discord manager. Yo
+"""
+
+@tool
 def print_message(message: str):
     """Prints a message to the console for logging or user feedback."""
     print(message)
-    
+
+@tool
 def get_guild_channels() -> json:
     """Retrieves a list of all channels in the guild, including their details like ID, name, type, and position."""
     url = f"https://discord.com/api/v10/guilds/{GUILD_ID}/channels"
@@ -21,7 +28,8 @@ def get_guild_channels() -> json:
         return response.json()
     else:
         return {"error": f"Failed to fetch channels: {response.status_code}"}
-    
+
+@tool
 def delete_channel(id: str) -> json:
     """Deletes a channel by its ID. Requires MANAGE_CHANNELS permission. Returns the deleted channel object or an error."""
     url = f"https://discord.com/api/v10/channels/{id}"
@@ -31,7 +39,8 @@ def delete_channel(id: str) -> json:
         return response.json()
     else:
         return {"error": f"Failed to delete channel: {response.status_code}"}
-    
+
+@tool 
 def create_channel(name: str, parent_id: str = "", position: int = 0) -> json:
     """Creates a text channel with the given name. Optionally set parent_id (category) and position. Returns the created channel or an error."""
     url = f"https://discord.com/api/v10/guilds/{GUILD_ID}/channels"
@@ -44,7 +53,8 @@ def create_channel(name: str, parent_id: str = "", position: int = 0) -> json:
         return response.json()
     else:
         return {"error": f"Failed to create channel: {response.status_code}"}
-    
+
+@tool
 def modify_channel(channel_id: str, name: str = None, parent_id: str = None, position: int = None) -> json:
     """Modifies a channel's properties by ID. Optionally update name, parent_id (category), or position. Returns the updated channel or an error."""
     url = f"https://discord.com/api/v10/channels/{channel_id}"
@@ -62,6 +72,7 @@ def modify_channel(channel_id: str, name: str = None, parent_id: str = None, pos
     else:
         return {"error": f"Failed to modify channel: {response.status_code}"}
 
+@tool
 def create_category(name: str) -> json:
     """Creates a category channel with the given name. Categories group text/voice channels. Returns the created category or an error."""
     url = f"https://discord.com/api/v10/guilds/{GUILD_ID}/channels"
