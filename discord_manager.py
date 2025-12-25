@@ -10,7 +10,6 @@ from langchain.agents import create_agent
 load_dotenv()
 DISCORD_GUILD_ID = os.environ.get("DISCORD_GUILD_ID")
 DISCORD_BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
-XAI_API_KEY = os.environ.get("XAI_API_KEY")
 
 llm = ChatXAI(
     model="grok-4-1-fast-reasoning"    
