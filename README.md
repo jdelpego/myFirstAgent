@@ -41,13 +41,13 @@ Example usage: Restructure a Discord server into a travel group by renaming and 
 ## Running
 
 - Run Agent0: `python agent0.py`
-- Run Discord Manager: `python discordManager.py`
+- Run Discord Manager: `python discord_manager.py`
 
 ## Notes
 
 - This is a learning project, so code may not be production-ready.
 - Be cautious with Discord API calls, especially deletions.
-- Requires a valid Discord bot token for discordManager.
+- Requires a valid Discord bot token for discord_manager.
 
 ## License
 
