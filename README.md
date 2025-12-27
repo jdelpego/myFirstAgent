@@ -1,4 +1,4 @@
-# myFirstAgent
+# myFirstAgents
 
 This is my first project exploring AI agents using LangChain and LangGraph. As a beginner in AI development, I'm building intelligent agents that can perform tasks autonomously. The project includes LangChain-based agents for general tasks and Discord management, as well as LangGraph examples for state management with memory and database persistence.
 
