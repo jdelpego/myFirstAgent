@@ -16,6 +16,7 @@ def add_1(state: State) -> State:
     return {"count": state["count"] + 1} 
 
 with PostgresSaver.from_conn_string(POSTGRES_DB_URI) as checkpointer:  
+    checkpointer.setup()
     builder = StateGraph(State)
     builder.add_node("add_1", add_1)
     builder.add_edge(START, "add_1")
@@ -24,7 +25,7 @@ with PostgresSaver.from_conn_string(POSTGRES_DB_URI) as checkpointer:
     agent = builder.compile(checkpointer=checkpointer)
 
     config: RunnableConfig = {"configurable": {"thread_id": "1"}}
-    print(agent.invoke({"count": 0}, config))
+    print(agent.invoke({}, config))
 
 
 
